@@ -1,5 +1,18 @@
 // Produtos reais da Arterio - mesma lista do ProductListing
-export const products = [
+
+export interface LocalProduct {
+  id: string;
+  name: string;
+  slug: string;
+  price?: number;
+  priceOnRequest?: boolean;
+  category: string;
+  inStock: boolean;
+  description?: string;
+  variants?: { name: string; value: string }[];
+}
+
+export const products: LocalProduct[] = [
   {
     id: "1",
     name: "Abraçadeira Hellermann 3,6mm x 150mm",

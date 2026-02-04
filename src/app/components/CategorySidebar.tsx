@@ -1,4 +1,4 @@
-import { categories } from "../inside/categories";
+import { categories } from "../data/categories";
 
 interface CategorySidebarProps {
   onCategorySelect?: (category: string) => void;

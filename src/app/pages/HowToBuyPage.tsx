@@ -1,4 +1,5 @@
 import { ShoppingCart, CreditCard, Package, CheckCircle } from "lucide-react";
+import { Link } from "react-router";
 
 export function HowToBuyPage() {
   return (
@@ -98,12 +99,12 @@ export function HowToBuyPage() {
         <p className="mb-8 text-sm text-black/60">
           Navegue por nosso catálogo e encontre os produtos que precisa
         </p>
-        <a
-          href="/produtos"
+        <Link
+          to="/produtos"
           className="inline-block bg-black px-8 py-4 text-sm tracking-wide text-white hover:bg-black/90 transition-colors"
         >
           VER CATÁLOGO
-        </a>
+        </Link>
       </div>
     </main>
   );

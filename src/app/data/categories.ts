@@ -35,7 +35,6 @@ export const categories: Category[] = [
   },
   {
     name: "Ferramentas e Set",
-    subcategories: ["Garras e Travas", "Infraestrutura", "Câmera/Lente", "Organização"],
+    subcategories: ["Garras e Travas", "Infraestrutura", "Câmera/Lense", "Organização"],
   },
 ];
-
