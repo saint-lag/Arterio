@@ -1,5 +1,4 @@
 import { Truck, Package, ArrowLeftRight, AlertCircle } from "lucide-react";
-import { Link } from "react-router";
 
 export function ShippingPage() {
   return (
@@ -150,12 +149,6 @@ export function ShippingPage() {
         <p className="mb-8 text-sm text-black/60">
           Nossa equipe está pronta para ajudar
         </p>
-        <Link
-          to="/contato"
-          className="inline-block bg-black px-8 py-4 text-sm tracking-wide text-white hover:bg-black/90 transition-colors"
-        >
-          FALE CONOSCO
-        </Link>
       </div>
     </main>
   );

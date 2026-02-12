@@ -1,7 +1,11 @@
 import { ArrowRight } from "lucide-react";
-import { Link } from "react-router";
 
-export function Home() {
+interface HomeProps {
+  onNavigate: (page: string) => void;
+  onCategorySelect: (category: string) => void;
+}
+
+export function Home({ onNavigate, onCategorySelect }: HomeProps) {
   const categories = [
     { name: "Organização e Fixação", count: "120+ itens" },
     { name: "Fitas Adesivas", count: "85+ itens" },
@@ -33,8 +37,8 @@ export function Home() {
             Soluções completas em materiais técnicos e suprimentos
             profissionais para cinema, TV e fotografia.
           </p>
-          <Link
-            to="/produtos"
+          <button
+            onClick={() => onNavigate("products")}
             className="group flex items-center gap-3 bg-black px-8 py-4 text-sm tracking-wide text-white hover:bg-black/90 transition-all"
           >
             VER CATÁLOGO
@@ -42,7 +46,7 @@ export function Home() {
               size={18}
               className="transition-transform group-hover:translate-x-1"
             />
-          </Link>
+          </button>
         </div>
       </section>
 
@@ -57,9 +61,9 @@ export function Home() {
 
         <div className="grid grid-cols-1 gap-px bg-black/10 md:grid-cols-2 lg:grid-cols-4">
           {categories.map((category, index) => (
-            <Link
+            <button
               key={index}
-              to="/produtos"
+              onClick={() => onCategorySelect(category.name)}
               className="group bg-white p-8 text-left hover:bg-neutral-50 transition-colors"
             >
               <div className="mb-4 flex items-center justify-between">
@@ -74,7 +78,7 @@ export function Home() {
                 {category.name}
               </h4>
               <p className="text-xs text-black/40">{category.count}</p>
-            </Link>
+            </button>
           ))}
         </div>
       </section>
@@ -118,18 +122,18 @@ export function Home() {
             Nossa equipe está pronta para ajudar.
           </p>
           <div className="flex gap-4">
-            <Link
-              to="/produtos"
+            <button
+              onClick={() => onNavigate("products")}
               className="bg-black px-8 py-4 text-sm tracking-wide text-white hover:bg-black/90 transition-colors"
             >
               VER TODOS OS PRODUTOS
-            </Link>
-            <Link 
-              to="/contato"
+            </button>
+            <button
+              onClick={() => onNavigate("contact")}
               className="border border-black px-8 py-4 text-sm tracking-wide text-black hover:bg-black hover:text-white transition-colors"
             >
               FALE CONOSCO
-            </Link>
+            </button>
           </div>
         </div>
       </section>

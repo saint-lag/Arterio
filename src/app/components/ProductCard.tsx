@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router";
 
 interface ProductCardProps {
   id: string;
@@ -31,7 +30,7 @@ export function ProductCard({
   return (
     <div className="group">
       {/* Product Image Placeholder */}
-      <Link to={slug ? `/produto/${slug}` : "#"} className="block">
+      <div className="block">
         <div className="relative mb-4 aspect-square overflow-hidden bg-neutral-100 border border-black/5 hover:border-black/20 transition-colors">
           <div className="flex h-full w-full items-center justify-center">
             <div className="text-center p-6">
@@ -44,17 +43,15 @@ export function ProductCard({
             </div>
           )}
         </div>
-      </Link>
+      </div>
 
       {/* Product Info */}
       <div className="space-y-3">
         <div>
           <p className="mb-1 text-xs tracking-wide text-black/40">{category}</p>
-          <Link to={slug ? `/produto/${slug}` : "#"}>
-            <h3 className="text-sm tracking-tight text-black group-hover:text-black/60 transition-colors">
-              {name}
-            </h3>
-          </Link>
+          <h3 className="text-sm tracking-tight text-black group-hover:text-black/60 transition-colors">
+            {name}
+          </h3>
         </div>
 
         {/* Color Variants */}

@@ -1,59 +1,106 @@
-import { Search, ShoppingCart, User } from "lucide-react";
-import { Link } from "react-router";
+import { Search, ShoppingCart, User, Menu, X } from "lucide-react";
+import { useState } from "react";
 
 interface HeaderProps {
   onCartClick?: () => void;
   cartItemCount?: number;
+  onNavigate?: (page: string) => void;
+  onSearch?: (searchTerm: string) => void;
 }
 
-export function Header({ onCartClick, cartItemCount = 0 }: HeaderProps) {
+export function Header({ onCartClick, cartItemCount = 0, onNavigate, onSearch }: HeaderProps) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleNavigate = (page: string) => {
+    onNavigate?.(page);
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      onSearch?.(searchTerm);
+      onNavigate?.("products");
+      setIsSearchOpen(false);
+      setIsMobileMenuOpen(false);
+    }
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    if (value.trim()) {
+      onSearch?.(value);
+    } else {
+      onSearch?.("");
+    }
+  };
+
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
+    if (!isSearchOpen) {
+      setSearchTerm("");
+      onSearch?.("");
+    }
+  };
+
   return (
-    <header className="border-b border-black/10 bg-white">
-      <div className="mx-auto max-w-7xl px-6 py-8">
+    <header className="border-b border-black/10 bg-white sticky top-0 z-50">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4 sm:py-6 md:py-8">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-12">
-            <Link to="/" className="text-2xl tracking-tight text-black hover:opacity-60 transition-opacity">
-              ARTERIO
-            </Link>
-            
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center gap-8">
-              <Link 
-                to="/"
-                className="text-sm tracking-wide text-black/60 hover:text-black transition-colors"
-              >
-                HOME
-              </Link>
-              <Link 
-                to="/produtos"
-                className="text-sm tracking-wide text-black/60 hover:text-black transition-colors"
-              >
-                PRODUTOS
-              </Link>
-              <Link 
-                to="/sobre"
-                className="text-sm tracking-wide text-black/60 hover:text-black transition-colors"
-              >
-                SOBRE
-              </Link>
-              <Link 
-                to="/contato"
-                className="text-sm tracking-wide text-black/60 hover:text-black transition-colors"
-              >
-                CONTATO
-              </Link>
-            </nav>
-          </div>
+          <button 
+            onClick={() => handleNavigate("home")} 
+            className="text-xl sm:text-2xl tracking-tight text-black hover:opacity-60 transition-opacity"
+          >
+            ARTERIO
+          </button>
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center gap-8">
+            <button 
+              onClick={() => handleNavigate("home")}
+              className="text-sm tracking-wide text-black/60 hover:text-black transition-colors"
+            >
+              HOME
+            </button>
+            <button 
+              onClick={() => handleNavigate("products")}
+              className="text-sm tracking-wide text-black/60 hover:text-black transition-colors"
+            >
+              PRODUTOS
+            </button>
+            <button 
+              onClick={() => handleNavigate("about")}
+              className="text-sm tracking-wide text-black/60 hover:text-black transition-colors"
+            >
+              SOBRE
+            </button>
+            <button 
+              onClick={() => handleNavigate("contact")}
+              className="text-sm tracking-wide text-black/60 hover:text-black transition-colors"
+            >
+              CONTATO
+            </button>
+          </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-6">
-            <button className="text-black/60 hover:text-black transition-colors">
+          <div className="flex items-center gap-3 sm:gap-6">
+            {/* Search - Hidden on small mobile */}
+            <button 
+              onClick={toggleSearch}
+              className="hidden sm:block text-black/60 hover:text-black transition-colors"
+            >
               <Search size={20} strokeWidth={1.5} />
             </button>
-            <button className="text-black/60 hover:text-black transition-colors">
+            
+            {/* User - Hidden on small mobile */}
+            <button className="hidden sm:block text-black/60 hover:text-black transition-colors">
               <User size={20} strokeWidth={1.5} />
             </button>
+            
+            {/* Cart */}
             <button 
               onClick={onCartClick}
               className="relative text-black/60 hover:text-black transition-colors"
@@ -65,9 +112,114 @@ export function Header({ onCartClick, cartItemCount = 0 }: HeaderProps) {
                 </span>
               )}
             </button>
+
+            {/* Mobile Menu Button */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden text-black/60 hover:text-black transition-colors"
+              aria-label="Toggle menu"
+            >
+              {isMobileMenuOpen ? (
+                <X size={24} strokeWidth={1.5} />
+              ) : (
+                <Menu size={24} strokeWidth={1.5} />
+              )}
+            </button>
           </div>
         </div>
+
+        {/* Desktop Search Bar */}
+        {isSearchOpen && (
+          <div className="hidden sm:block mt-6 pt-6 border-t border-black/10">
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                placeholder="Buscar produtos..."
+                className="w-full px-4 py-3 text-sm border border-black/20 focus:border-black outline-none transition-colors"
+                autoFocus
+              />
+              <button
+                type="submit"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-black/60 hover:text-black transition-colors"
+              >
+                <Search size={18} strokeWidth={1.5} />
+              </button>
+            </form>
+          </div>
+        )}
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/20 lg:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          
+          {/* Menu Panel */}
+          <nav className="fixed top-[73px] right-0 bottom-0 w-full sm:w-80 bg-white border-l border-black/10 lg:hidden overflow-y-auto">
+            <div className="flex flex-col p-6 gap-1">
+              {/* Mobile Search */}
+              <div className="mb-6 pb-6 border-b border-black/10 sm:hidden">
+                <form onSubmit={handleSearchSubmit}>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => handleSearchChange(e.target.value)}
+                      placeholder="Buscar produtos..."
+                      className="w-full px-4 py-3 text-sm border border-black/20 focus:border-black outline-none transition-colors"
+                    />
+                    <button
+                      type="submit"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-black/60 hover:text-black transition-colors"
+                    >
+                      <Search size={18} strokeWidth={1.5} />
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <button 
+                onClick={() => handleNavigate("home")}
+                className="text-left py-4 px-4 text-base tracking-wide text-black/80 hover:bg-black/5 transition-colors"
+              >
+                HOME
+              </button>
+              <button 
+                onClick={() => handleNavigate("products")}
+                className="text-left py-4 px-4 text-base tracking-wide text-black/80 hover:bg-black/5 transition-colors"
+              >
+                PRODUTOS
+              </button>
+              <button 
+                onClick={() => handleNavigate("about")}
+                className="text-left py-4 px-4 text-base tracking-wide text-black/80 hover:bg-black/5 transition-colors"
+              >
+                SOBRE
+              </button>
+              <button 
+                onClick={() => handleNavigate("contact")}
+                className="text-left py-4 px-4 text-base tracking-wide text-black/80 hover:bg-black/5 transition-colors"
+              >
+                CONTATO
+              </button>
+
+              {/* Mobile-only actions */}
+              <div className="mt-8 pt-8 border-t border-black/10 sm:hidden">
+                <button className="flex items-center gap-3 w-full py-4 px-4 text-base tracking-wide text-black/80 hover:bg-black/5 transition-colors">
+                  <User size={20} strokeWidth={1.5} />
+                  CONTA
+                </button>
+              </div>
+            </div>
+          </nav>
+        </>
+      )}
     </header>
   );
 }

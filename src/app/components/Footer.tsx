@@ -1,7 +1,10 @@
 import { MapPin, Lock, CreditCard } from "lucide-react";
-import { Link } from "react-router";
 
-export function Footer() {
+interface FooterProps {
+  onNavigate: (page: string) => void;
+}
+
+export function Footer({ onNavigate }: FooterProps) {
   return (
     <footer className="border-t border-black/10 bg-white">
       {/* Main Footer Content */}
@@ -23,18 +26,18 @@ export function Footer() {
               NAVEGAÇÃO
             </h3>
             <nav className="flex flex-col space-y-2">
-              <Link to="/" className="text-xs text-black/60 hover:text-black transition-colors">
+              <button onClick={() => onNavigate("home")} className="text-xs text-black/60 hover:text-black transition-colors text-left">
                 Home
-              </Link>
-              <Link to="/produtos" className="text-xs text-black/60 hover:text-black transition-colors">
+              </button>
+              <button onClick={() => onNavigate("products")} className="text-xs text-black/60 hover:text-black transition-colors text-left">
                 Produtos
-              </Link>
-              <Link to="/sobre" className="text-xs text-black/60 hover:text-black transition-colors">
+              </button>
+              <button onClick={() => onNavigate("about")} className="text-xs text-black/60 hover:text-black transition-colors text-left">
                 Sobre
-              </Link>
-              <Link to="/contato" className="text-xs text-black/60 hover:text-black transition-colors">
+              </button>
+              <button onClick={() => onNavigate("contact")} className="text-xs text-black/60 hover:text-black transition-colors text-left">
                 Contato
-              </Link>
+              </button>
             </nav>
           </div>
 
@@ -44,22 +47,22 @@ export function Footer() {
               AJUDA
             </h3>
             <nav className="flex flex-col space-y-2">
-              <Link to="/como-comprar" className="text-xs text-black/60 hover:text-black transition-colors">
+              <button onClick={() => onNavigate("how-to-buy")} className="text-xs text-black/60 hover:text-black transition-colors text-left">
                 Como Comprar
-              </Link>
-              <Link to="/entrega" className="text-xs text-black/60 hover:text-black transition-colors">
+              </button>
+              <button onClick={() => onNavigate("shipping")} className="text-xs text-black/60 hover:text-black transition-colors text-left">
                 Entrega e Devoluções
-              </Link>
-              <Link to="/termos" className="text-xs text-black/60 hover:text-black transition-colors">
+              </button>
+              <button onClick={() => onNavigate("terms")} className="text-xs text-black/60 hover:text-black transition-colors text-left">
                 Termos de Uso
-              </Link>
-              <Link to="/privacidade" className="text-xs text-black/60 hover:text-black transition-colors">
+              </button>
+              <button onClick={() => onNavigate("privacy")} className="text-xs text-black/60 hover:text-black transition-colors text-left">
                 Política de Privacidade
-              </Link>
+              </button>
             </nav>
           </div>
 
-          {/* Contact - moved to 4th column */}
+          {/* Contact */}
           <div className="space-y-4">
             <h3 className="text-sm tracking-wide text-black">
               CONTATO
@@ -139,15 +142,15 @@ export function Footer() {
               © {new Date().getFullYear()} Arterio. Todos os direitos reservados.
             </p>
             <div className="flex justify-center gap-6 text-xs text-black/40 md:justify-start">
-              <Link to="/privacidade" className="hover:text-black transition-colors">
+              <button onClick={() => onNavigate("privacy")} className="hover:text-black transition-colors">
                 Política de Privacidade
-              </Link>
-              <Link to="/termos" className="hover:text-black transition-colors">
+              </button>
+              <button onClick={() => onNavigate("terms")} className="hover:text-black transition-colors">
                 Termos de Uso
-              </Link>
-              <Link to="/entrega" className="hover:text-black transition-colors">
+              </button>
+              <button onClick={() => onNavigate("shipping")} className="hover:text-black transition-colors">
                 Trocas e Devoluções
-              </Link>
+              </button>
             </div>
           </div>
         </div>

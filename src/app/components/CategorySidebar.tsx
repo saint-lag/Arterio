@@ -7,7 +7,7 @@ interface CategorySidebarProps {
 
 export function CategorySidebar({ onCategorySelect, selectedCategory }: CategorySidebarProps) {
   return (
-    <aside className="w-64 pr-12">
+    <aside className="hidden lg:block w-64 pr-12">
       <nav className="space-y-8">
         {categories.map((category) => (
           <div key={category.name}>
