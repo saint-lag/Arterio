@@ -14,6 +14,17 @@ export function CategoryNav({ onCategorySelect }: CategoryNavProps) {
     setActiveCategory(categoryName);
   };
 
+  const handleCategoryClick = (categoryName: string) => {
+    const category = categories.find((cat) => cat.name === categoryName);
+    // If category has no subcategories, navigate directly
+    if (category && category.subcategories.length === 0) {
+      onCategorySelect?.(categoryName);
+      setActiveCategory(null);
+    } else {
+      setActiveCategory(activeCategory === categoryName ? null : categoryName);
+    }
+  };
+
   const handleSubcategoryClick = (subcategory: string) => {
     onCategorySelect?.(subcategory);
     setActiveCategory(null);
@@ -21,7 +32,15 @@ export function CategoryNav({ onCategorySelect }: CategoryNavProps) {
   };
 
   const toggleMobileCategory = (categoryName: string) => {
-    setActiveCategory(activeCategory === categoryName ? null : categoryName);
+    const category = categories.find((cat) => cat.name === categoryName);
+    // If category has no subcategories, navigate directly
+    if (category && category.subcategories.length === 0) {
+      onCategorySelect?.(categoryName);
+      setIsMobileMenuOpen(false);
+      setActiveCategory(null);
+    } else {
+      setActiveCategory(activeCategory === categoryName ? null : categoryName);
+    }
   };
 
   return (
@@ -38,6 +57,7 @@ export function CategoryNav({ onCategorySelect }: CategoryNavProps) {
               <button
                 key={category.name}
                 onMouseEnter={() => handleCategoryHover(category.name)}
+                onClick={() => handleCategoryClick(category.name)}
                 className={`group relative flex items-center gap-1 py-5 text-xs tracking-wide transition-colors ${
                   activeCategory === category.name
                     ? "text-black"

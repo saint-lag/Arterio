@@ -1,40 +1,82 @@
-
-interface Category {
+export interface Category {
   name: string;
   subcategories: string[];
 }
 
 export const categories: Category[] = [
   {
-    name: "Organização e Fixação",
-    subcategories: ["Abraçadeiras Nylon", "Velcro", "Acessórios"],
+    name: "Gelatinas",
+    subcategories: [
+      "Gelatinas de correção",
+      "Gelatinas de difusão",
+      "Gelatinas de efeito",
+    ],
   },
   {
-    name: "Fitas Adesivas",
-    subcategories: ["Gaffer & Photo", "Crepe & Artística", "Demarcação", "Técnicas", "Dupla Face", "Embalagem", "Saúde"],
+    name: "Câmera",
+    subcategories: [
+      "Nacionais",
+      "Importados",
+    ],
   },
   {
-    name: "Elétrica e Conectores",
-    subcategories: ["Plugs e Adaptadores", "Bocais", "Conectores BNC", "Filtros de Linha"],
+    name: "Elétrica",
+    subcategories: [
+      "Abraçadeira",
+      "Conectores",
+      "Ferramentas",
+      "Sprays",
+    ],
   },
   {
-    name: "Pilhas e Baterias",
-    subcategories: ["AA", "AAA", "9V", "CR2032"],
+    name: "Fitas",
+    subcategories: [
+      "Fita Gaffer (Tecido)",
+      "Fita Gaffer (Fluorescente)",
+      "Papel",
+      "PVC",
+      "Durex",
+      "Antiderrapante",
+    ],
   },
   {
-    name: "Químicos e Sprays",
-    subcategories: ["Limpeza", "Manutenção", "Efeitos Especiais"],
+    name: "Pilhas",
+    subcategories: [
+      "Baterias",
+      "Pilhas AA",
+      "Pilhas AAA",
+    ],
+  },
+  {
+    name: "Farmácia",
+    subcategories: [
+      "Higiene e proteção",
+      "3M Nexcare",
+      "Acessórios",
+    ],
   },
   {
     name: "Papelaria",
-    subcategories: ["Escrita", "Marcadores", "Corte e Grampo", "Diversos"],
+    subcategories: [
+      "Canetas",
+      "Saco Zip Lock",
+      "Velcro",
+      "Corda",
+      "Itens de escritório",
+    ],
   },
   {
-    name: "Higiene e Proteção",
-    subcategories: ["Higiene Pessoal", "Proteção Solar", "Outros"],
+    name: "Diversos",
+    subcategories: [],
   },
   {
-    name: "Ferramentas e Set",
-    subcategories: ["Garras e Travas", "Infraestrutura", "Câmera/Lense", "Organização"],
+    name: "Itens sob consulta",
+    subcategories: [
+      "Líquido de fumaça",
+      "Tecidos",
+      "Lonas",
+      "Caixas",
+      "Outros",
+    ],
   },
 ];
