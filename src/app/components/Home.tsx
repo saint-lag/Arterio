@@ -19,6 +19,7 @@ export function Home({ onNavigate, onCategorySelect, onProductClick }: HomeProps
     { name: "Ferramentas e Set", count: "110+ itens" },
   ];
 
+
   const featuredProducts: WCProduct[] = [
     {
       id: 1001,

@@ -68,7 +68,7 @@ export function useProduct(productId: number | null) {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    if (!productId) {
+    if (!productId || typeof productId !== 'number') {
       setProduct(null);
       setLoading(false);
       return;
@@ -81,7 +81,7 @@ export function useProduct(productId: number | null) {
         setLoading(true);
         setError(null);
 
-        const wcProduct = await productService.getById(productId);
+        const wcProduct = await productService.getById(productId as number);
 
         if (isMounted) {
           const localProduct = mapWCProductsToLocal([wcProduct])[0];
