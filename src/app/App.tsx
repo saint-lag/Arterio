@@ -118,7 +118,11 @@ export default function App() {
       {/* Main content */}
       <main>
         {currentPage === "home" && (
-          <Home onNavigate={navigateTo} onCategorySelect={handleCategorySelect} />
+          <Home 
+            onNavigate={navigateTo} 
+            onCategorySelect={handleCategorySelect}
+            onProductClick={handleProductClick}
+          />
         )}
         {currentPage === "products" && (
           <ProductListing
