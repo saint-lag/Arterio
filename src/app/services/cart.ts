@@ -111,17 +111,34 @@ export const cartService = {
       return;
     }
 
-    // Criar URL com produtos
-    // O WooCommerce pode aceitar produtos via URL params ou você pode usar a API
-    const checkoutUrl = new URL(WP_CONFIG.checkoutUrl);
-    
-    // Opção 1: Redirecionar direto para checkout
-    // O carrinho será sincronizado via cookies do WooCommerce se o usuário já adicionou produtos
-    window.location.href = checkoutUrl.toString();
+    try {
+      // Sincronizar carrinho com WooCommerce Store API antes do checkout
+      const addItemPromises = cart.map(item => 
+        fetch(`${WP_CONFIG.storeApiUrl}/cart/add-item`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Nonce': 'prevent-cache',
+          },
+          credentials: 'include', // CRÍTICO: Mantém sessão do WooCommerce
+          body: JSON.stringify({
+            id: item.product_id,
+            quantity: item.quantity,
+          }),
+        })
+      );
 
-    // Opção 2: Usar WooCommerce Store API (mais moderno)
-    // Você precisaria implementar a sincronização com a Store API
-    // https://github.com/woocommerce/woocommerce/tree/trunk/plugins/woocommerce/src/StoreApi
+      // Aguardar todas as requisições
+      await Promise.all(addItemPromises);
+
+      // Redirecionar para checkout após sincronização
+      window.location.href = WP_CONFIG.checkoutUrl;
+
+    } catch (error) {
+      console.error('Erro ao sincronizar carrinho com WooCommerce:', error);
+      alert('Erro ao preparar checkout. Por favor, tente novamente.');
+      throw error;
+    }
   },
 
   // Sincronizar carrinho local com WooCommerce (usando Store API ou Session)

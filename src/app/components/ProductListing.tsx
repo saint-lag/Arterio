@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { CategorySidebar } from "./CategorySidebar";
 import { ProductCard } from "./ProductCard";
 import { Pagination } from "./Pagination";
-import { products } from "../data/products";
+import { useProducts } from "../hooks/useProducts";
 import type { WCProduct } from "../types/woocommerce";
 
 interface ProductListingProps {
@@ -20,19 +20,12 @@ const PRODUCTS_PER_PAGE = 12;
 export function ProductListing({ onNotifyMe, selectedCategory, onClearCategory, onCategorySelect, onAddToCart, onProductClick, searchTerm = "" }: ProductListingProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Filter by category
-  let filteredProducts = selectedCategory
-    ? products.filter((product) => product.category === selectedCategory)
-    : products;
-
-  // Filter by search term
-  if (searchTerm.trim()) {
-    const searchLower = searchTerm.toLowerCase().trim();
-    filteredProducts = filteredProducts.filter((product) =>
-      product.name.toLowerCase().includes(searchLower) ||
-      product.category.toLowerCase().includes(searchLower)
-    );
-  }
+  // Fetch products using the Store API via useProducts hook
+  const { products: filteredProducts, loading, error } = useProducts({
+    category: selectedCategory || undefined,
+    search: searchTerm || undefined,
+    perPage: 100
+  });
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
@@ -73,6 +66,44 @@ export function ProductListing({ onNotifyMe, selectedCategory, onClearCategory, 
     }
     return "Catálogo Completo";
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-2 border-solid border-black border-r-transparent mb-4"></div>
+            <p className="text-sm text-black/60">Carregando catálogo...</p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center max-w-md">
+            <p className="text-base text-black/60 mb-4">
+              Erro ao carregar produtos. Por favor, tente novamente.
+            </p>
+            <p className="text-sm text-black/40 mb-6">
+              {error.message}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-black px-6 py-3 text-sm tracking-wide text-white hover:bg-black/90 transition-colors"
+            >
+              RECARREGAR PÁGINA
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
