@@ -112,9 +112,10 @@ export const cartService = {
     }
 
     try {
-      // Sincronizar carrinho com WooCommerce Store API antes do checkout
-      const addItemPromises = cart.map(item => 
-        fetch(`${WP_CONFIG.storeApiUrl}/cart/add-item`, {
+      // 1. Usar loop sequencial em vez de Promise.all para evitar 
+      // Race Condition na criação da sessão PHP do WooCommerce
+      for (const item of cart) {
+        const response = await fetch(`${WP_CONFIG.storeApiUrl}/cart/add-item`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -125,13 +126,18 @@ export const cartService = {
             id: item.product_id,
             quantity: item.quantity,
           }),
-        })
-      );
+        });
 
-      // Aguardar todas as requisições
-      await Promise.all(addItemPromises);
+        if (!response.ok) {
+          console.warn(`Falha ao adicionar o produto ${item.product_id} ao carrinho do servidor.`);
+        }
+      }
 
-      // Redirecionar para checkout após sincronização
+      // 2. Limpar o carrinho local (localStorage) para que o frontend 
+      // não fique com itens "fantasmas" após o redirecionamento
+      this.clearCart();
+
+      // 3. Redirecionar para checkout após sincronização concluída
       window.location.href = WP_CONFIG.checkoutUrl;
 
     } catch (error) {
