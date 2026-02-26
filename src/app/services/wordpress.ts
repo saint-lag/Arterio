@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 // Configuração Limpa para WooCommerce Store API
 export const WP_CONFIG = {
   // O Vite exige import.meta.env e o prefixo VITE_

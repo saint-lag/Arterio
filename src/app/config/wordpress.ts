@@ -1,4 +1,5 @@
-// src/app/config/wordpress.ts
+/// <reference types="vite/client" />
+
 
 export const WP_CONFIG = {
   // 1. Usando o padrão correto do Vite (import.meta.env)
