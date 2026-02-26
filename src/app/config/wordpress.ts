@@ -1,29 +1,19 @@
-// WordPress/WooCommerce API Configuration
+// src/app/config/wordpress.ts
+
 export const WP_CONFIG = {
-  // Altere para a URL do seu WordPress
-  siteUrl: process.env.REACT_APP_WP_URL || 'https://arterio.com.br/wp',
+  // 1. Usando o padrão correto do Vite (import.meta.env)
+  siteUrl: import.meta.env.VITE_WP_URL || 'https://arterio.com.br/wp',
   
-  // WooCommerce REST API credentials
-  // Gere no WordPress: WooCommerce > Settings > Advanced > REST API
-  consumerKey: process.env.REACT_APP_WC_CONSUMER_KEY || '',
-  consumerSecret: process.env.REACT_APP_WC_CONSUMER_SECRET || '',
+  // 2. Apontando para a Store API (Pública e segura para o React)
+  storeApiUrl: import.meta.env.VITE_WP_URL 
+    ? `${import.meta.env.VITE_WP_URL}/wp-json/wc/store/v1` 
+    : 'https://arterio.com.br/wp/wp-json/wc/store/v1',
   
-  // API endpoints
-  apiUrl: process.env.REACT_APP_WP_URL 
-    ? `${process.env.REACT_APP_WP_URL}/wp-json` 
-    : 'https://arterio.com.br/wp/wp-json',
-  wcApiUrl: process.env.REACT_APP_WP_URL 
-    ? `${process.env.REACT_APP_WP_URL}/wp-json/wc/v3` 
-    : 'https://arterio.com.br/wp/wp-json/wc/v3',
-  
-  // Checkout page URL (WooCommerce checkout)
-  checkoutUrl: process.env.REACT_APP_WP_URL 
-    ? `${process.env.REACT_APP_WP_URL}/checkout` 
+  // URL para onde o cliente vai na hora de pagar
+  checkoutUrl: import.meta.env.VITE_WP_URL 
+    ? `${import.meta.env.VITE_WP_URL}/checkout` 
     : 'https://arterio.com.br/wp/checkout',
 };
 
-// Helper para criar Basic Auth header
-export const getWCAuthHeader = () => {
-  const credentials = btoa(`${WP_CONFIG.consumerKey}:${WP_CONFIG.consumerSecret}`);
-  return `Basic ${credentials}`;
-};
+// Removemos completamente o getWCAuthHeader e as chaves (Consumer Key/Secret).
+// A Store API não precisa delas!
