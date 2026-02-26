@@ -1,121 +1,77 @@
-import { WP_CONFIG, getWCAuthHeader } from '../config/wordpress';
+import { WP_CONFIG } from '../config/wordpress';
 import type { WCProduct, WCCategory, Product } from '../types/woocommerce';
 
-// Helper para fazer requests à API do WooCommerce
-async function wcRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = `${WP_CONFIG.wcApiUrl}${endpoint}`;
-  
-  const headers = {
-    'Content-Type': 'application/json',
-    'Authorization': getWCAuthHeader(),
-    ...options.headers,
-  };
+// Helper limpo para fazer requests à Store API
+async function storeRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  const url = `${WP_CONFIG.storeApiUrl}${endpoint}`;
 
   try {
     const response = await fetch(url, {
       ...options,
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
     });
 
     if (!response.ok) {
-      throw new Error(`WooCommerce API Error: ${response.status} ${response.statusText}`);
+      throw new Error(`Store API Error: ${response.status} ${response.statusText}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.error('WooCommerce API Error:', error);
+    console.error('Store API Error:', error);
     throw error;
   }
 }
 
-// Serviço de Produtos
 export const productService = {
-  // Buscar todos os produtos
-  async getAll(params?: {
-    per_page?: number;
-    page?: number;
-    category?: string;
-    search?: string;
-    status?: string;
-  }): Promise<WCProduct[]> {
+  async getAll(params?: { per_page?: number; page?: number; category?: string; search?: string }): Promise<any[]> {
     const queryParams = new URLSearchParams();
     
     if (params?.per_page) queryParams.append('per_page', params.per_page.toString());
     if (params?.page) queryParams.append('page', params.page.toString());
     if (params?.category) queryParams.append('category', params.category);
     if (params?.search) queryParams.append('search', params.search);
-    if (params?.status) queryParams.append('status', params.status);
     
-    queryParams.append('status', 'publish'); // Apenas produtos publicados
-    
-    const endpoint = `/products?${queryParams.toString()}`;
-    return wcRequest<WCProduct[]>(endpoint);
+    // Na Store API não precisamos de status=publish, ela já faz isso nativamente
+    return storeRequest<any[]>(`/products?${queryParams.toString()}`);
   },
 
-  // Buscar produto por ID
-  async getById(id: number): Promise<WCProduct> {
-    return wcRequest<WCProduct>(`/products/${id}`);
-  },
-
-  // Buscar produto por slug
-  async getBySlug(slug: string): Promise<WCProduct[]> {
-    return wcRequest<WCProduct[]>(`/products?slug=${slug}`);
-  },
-
-  // Buscar produtos por categoria
-  async getByCategory(categoryId: number | string, perPage = 100): Promise<WCProduct[]> {
-    return wcRequest<WCProduct[]>(`/products?category=${categoryId}&per_page=${perPage}&status=publish`);
-  },
+  async getById(id: number): Promise<any> {
+    return storeRequest<any>(`/products/${id}`);
+  }
 };
 
-// Serviço de Categorias
 export const categoryService = {
-  // Buscar todas as categorias
-  async getAll(params?: {
-    per_page?: number;
-    parent?: number;
-    hide_empty?: boolean;
-  }): Promise<WCCategory[]> {
-    const queryParams = new URLSearchParams();
-    
-    if (params?.per_page) queryParams.append('per_page', params.per_page.toString());
-    if (params?.parent !== undefined) queryParams.append('parent', params.parent.toString());
-    if (params?.hide_empty !== undefined) queryParams.append('hide_empty', params.hide_empty.toString());
-    
-    const endpoint = `/products/categories?${queryParams.toString()}`;
-    return wcRequest<WCCategory[]>(endpoint);
-  },
-
-  // Buscar categoria por ID
-  async getById(id: number): Promise<WCCategory> {
-    return wcRequest<WCCategory>(`/products/categories/${id}`);
-  },
-
-  // Buscar categoria por slug
-  async getBySlug(slug: string): Promise<WCCategory[]> {
-    return wcRequest<WCCategory[]>(`/products/categories?slug=${slug}`);
-  },
+  async getAll(): Promise<any[]> {
+    return storeRequest<any[]>('/products/categories');
+  }
 };
 
-// Helper: Converter produto WooCommerce para formato local
-export function mapWCProductToLocal(wcProduct: WCProduct): Product {
+// Mapeamento atualizado para o formato da Store API
+export function mapWCProductToLocal(storeProduct: any): Product {
+  // A Store API retorna os preços no objeto 'prices' (geralmente em centavos ou string formatada, dependendo do WooCommerce)
+  const priceString = storeProduct.prices?.price || '0';
+  // O WooCommerce Store API divide o valor por 100 se a moeda tiver 2 decimais
+  const price = typeof priceString === 'string' ? parseFloat(priceString) / 100 : priceString;
+
   return {
-    id: wcProduct.id.toString(),
-    name: wcProduct.name,
-    price: parseFloat(wcProduct.price) || 0,
-    category: wcProduct.categories[0]?.name || 'Sem Categoria',
-    inStock: wcProduct.stock_status === 'instock',
-    image: wcProduct.images[0]?.src,
-    sku: wcProduct.sku,
-    description: wcProduct.short_description || wcProduct.description,
-    variants: wcProduct.attributes.map(attr => ({
+    id: storeProduct.id.toString(),
+    name: storeProduct.name,
+    price: price,
+    category: storeProduct.categories?.[0]?.name || 'Sem Categoria',
+    inStock: storeProduct.is_in_stock, 
+    image: storeProduct.images?.[0]?.src,
+    sku: storeProduct.sku,
+    description: storeProduct.short_description || storeProduct.description,
+    variants: storeProduct.attributes?.map((attr: any) => ({
       name: attr.name,
-      value: attr.options.join(', ')
-    })),
+      value: attr.terms?.map((t: any) => t.name).join(', ')
+    })) || [],
   };
 }
 
-// Helper: Converter produtos em lote
-export function mapWCProductsToLocal(wcProducts: WCProduct[]): Product[] {
+export function mapWCProductsToLocal(wcProducts: any[]): Product[] {
   return wcProducts.map(mapWCProductToLocal);
 }

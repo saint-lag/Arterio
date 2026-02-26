@@ -13,12 +13,14 @@ import { HowToBuyPage } from "./pages/HowToBuyPage";
 import { ShippingPage } from "./pages/ShippingPage";
 import { TermsPage } from "./pages/TermsPage";
 import { PrivacyPage } from "./pages/PrivacyPage";
+import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { useCart } from "./hooks/useCart";
-import type { Product } from "./types/woocommerce";
+import type { Product, WCProduct } from "./types/woocommerce";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState("home");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedProductDetail, setSelectedProductDetail] = useState<WCProduct | null>(null);
   const [notifyModalOpen, setNotifyModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -79,11 +81,26 @@ export default function App() {
 
   const navigateTo = (page: string) => {
     setCurrentPage(page);
-    if (page !== "products") {
+    if (page !== "products" && page !== "product-detail") {
       setSelectedCategory(null);
       setSearchTerm(""); // Clear search when navigating away from products
     }
+    if (page !== "product-detail") {
+      setSelectedProductDetail(null);
+    }
     // Scroll to top on navigation
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleProductClick = (product: WCProduct) => {
+    setSelectedProductDetail(product);
+    setCurrentPage("product-detail");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleBackFromProduct = () => {
+    setSelectedProductDetail(null);
+    setCurrentPage("products");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -110,6 +127,7 @@ export default function App() {
             onClearCategory={handleClearCategory}
             onCategorySelect={handleCategorySelect}
             onAddToCart={handleAddToCart}
+            onProductClick={handleProductClick}
             searchTerm={searchTerm}
           />
         )}
@@ -119,6 +137,14 @@ export default function App() {
         {currentPage === "shipping" && <ShippingPage />}
         {currentPage === "terms" && <TermsPage />}
         {currentPage === "privacy" && <PrivacyPage />}
+        {currentPage === "product-detail" && selectedProductDetail && (
+          <ProductDetailPage 
+            product={selectedProductDetail}
+            onBack={handleBackFromProduct}
+            onAddToCart={handleAddToCart}
+            onNotifyMe={handleNotifyMe}
+          />
+        )}
       </main>
 
       {/* Persistent WhatsApp Button */}

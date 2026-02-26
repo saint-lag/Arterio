@@ -33,7 +33,6 @@ export function useProducts(options: UseProductsOptions = {}) {
           per_page: perPage,
           category,
           search,
-          status: 'publish',
         });
 
         if (isMounted) {

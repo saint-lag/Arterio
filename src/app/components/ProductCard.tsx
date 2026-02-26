@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { WCProduct } from "../types/woocommerce";
 
 interface ProductCardProps {
   id: string;
@@ -11,6 +12,7 @@ interface ProductCardProps {
   variants?: { name: string; value: string }[];
   onNotifyMe: (productName: string) => void;
   onAddToCart?: (product: { id: string; name: string; price?: number; category: string; inStock: boolean }) => void;
+  onProductClick?: (product: WCProduct) => void;
 }
 
 export function ProductCard({
@@ -24,11 +26,45 @@ export function ProductCard({
   variants,
   onNotifyMe,
   onAddToCart,
+  onProductClick,
 }: ProductCardProps) {
   const [selectedVariant, setSelectedVariant] = useState(variants?.[0]?.value || "");
 
+  const handleCardClick = () => {
+    if (onProductClick) {
+      // Convert to WCProduct format
+      const wcProduct: WCProduct = {
+        id: parseInt(id),
+        name,
+        slug: slug || name.toLowerCase().replace(/\s+/g, '-'),
+        permalink: '',
+        date_created: '',
+        type: 'simple',
+        status: 'publish',
+        featured: false,
+        catalog_visibility: 'visible',
+        description: '',
+        short_description: '',
+        sku: id,
+        price: price?.toString() || '0',
+        regular_price: price?.toString() || '0',
+        sale_price: '',
+        on_sale: false,
+        stock_status: inStock ? 'instock' : 'outofstock',
+        stock_quantity: inStock ? 10 : 0,
+        manage_stock: true,
+        categories: [{ id: 1, name: category, slug: category.toLowerCase() }],
+        images: [],
+        attributes: [],
+        variations: [],
+        meta_data: priceOnRequest ? [{ id: 1, key: '_price_on_request', value: 'yes' }] : [],
+      };
+      onProductClick(wcProduct);
+    }
+  };
+
   return (
-    <div className="group">
+    <div className="group cursor-pointer" onClick={handleCardClick}>
       {/* Product Image Placeholder */}
       <div className="block">
         <div className="relative mb-4 aspect-square overflow-hidden bg-neutral-100 border border-black/5 hover:border-black/20 transition-colors">
@@ -60,7 +96,10 @@ export function ProductCard({
             {variants.map((variant) => (
               <button
                 key={variant.value}
-                onClick={() => setSelectedVariant(variant.value)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedVariant(variant.value);
+                }}
                 className={`h-6 w-6 border transition-all ${
                   selectedVariant === variant.value
                     ? "border-black scale-110"
@@ -83,14 +122,20 @@ export function ProductCard({
 
           {!inStock ? (
             <button
-              onClick={() => onNotifyMe(name)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onNotifyMe(name);
+              }}
               className="text-xs tracking-wide text-black/60 underline hover:text-black transition-colors"
             >
               AVISE-ME
             </button>
           ) : (
             <button 
-              onClick={() => onAddToCart?.({ id, name, price, category, inStock })}
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddToCart?.({ id, name, price, category, inStock });
+              }}
               className="text-xs tracking-wide text-black hover:text-black/60 transition-colors"
             >
               ADICIONAR

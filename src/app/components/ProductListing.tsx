@@ -3,6 +3,7 @@ import { CategorySidebar } from "./CategorySidebar";
 import { ProductCard } from "./ProductCard";
 import { Pagination } from "./Pagination";
 import { products } from "../data/products";
+import type { WCProduct } from "../types/woocommerce";
 
 interface ProductListingProps {
   onNotifyMe: (productName: string) => void;
@@ -10,12 +11,13 @@ interface ProductListingProps {
   onClearCategory: () => void;
   onCategorySelect: (category: string) => void;
   onAddToCart?: (product: { id: string; name: string; price?: number; category: string; inStock: boolean }) => void;
+  onProductClick?: (product: WCProduct) => void;
   searchTerm?: string;
 }
 
 const PRODUCTS_PER_PAGE = 12;
 
-export function ProductListing({ onNotifyMe, selectedCategory, onClearCategory, onCategorySelect, onAddToCart, searchTerm = "" }: ProductListingProps) {
+export function ProductListing({ onNotifyMe, selectedCategory, onClearCategory, onCategorySelect, onAddToCart, onProductClick, searchTerm = "" }: ProductListingProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Filter by category
@@ -120,7 +122,7 @@ export function ProductListing({ onNotifyMe, selectedCategory, onClearCategory, 
             <>
               <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 sm:gap-x-8 sm:gap-y-16">
                 {currentProducts.map((product) => (
-                  <ProductCard key={product.id} {...product} onNotifyMe={onNotifyMe} onAddToCart={onAddToCart} />
+                  <ProductCard key={product.id} {...product} onNotifyMe={onNotifyMe} onAddToCart={onAddToCart} onProductClick={onProductClick} />
                 ))}
               </div>
 
