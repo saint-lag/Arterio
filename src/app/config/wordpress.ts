@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 // src/app/config/wordpress.ts
 
 export const WP_CONFIG = {

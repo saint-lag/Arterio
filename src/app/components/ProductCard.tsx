@@ -9,6 +9,7 @@ interface ProductCardProps {
   priceOnRequest?: boolean;
   category: string;
   inStock: boolean;
+  image?: string;
   variants?: { name: string; value: string }[];
   onNotifyMe: (productName: string) => void;
   onAddToCart?: (product: { id: string; name: string; price?: number; category: string; inStock: boolean }) => void;
@@ -23,6 +24,7 @@ export function ProductCard({
   priceOnRequest,
   category,
   inStock,
+  image,
   variants,
   onNotifyMe,
   onAddToCart,
@@ -54,7 +56,7 @@ export function ProductCard({
         stock_quantity: inStock ? 10 : 0,
         manage_stock: true,
         categories: [{ id: 1, name: category, slug: category.toLowerCase() }],
-        images: [],
+        images: image ? [{ id: 1, src: image, alt: name, name }] : [],
         attributes: [],
         variations: [],
         meta_data: priceOnRequest ? [{ id: 1, key: '_price_on_request', value: 'yes' }] : [],
@@ -68,11 +70,19 @@ export function ProductCard({
       {/* Product Image Placeholder */}
       <div className="block">
         <div className="relative mb-4 aspect-square overflow-hidden bg-neutral-100 border border-black/5 hover:border-black/20 transition-colors">
-          <div className="flex h-full w-full items-center justify-center">
-            <div className="text-center p-6">
-              <p className="text-xs tracking-wider text-black/20">{category.toUpperCase()}</p>
+          {image ? (
+            <img 
+              src={image} 
+              alt={name} 
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <div className="text-center p-6">
+                <p className="text-xs tracking-wider text-black/20">{category.toUpperCase()}</p>
+              </div>
             </div>
-          </div>
+          )}
           {!inStock && (
             <div className="absolute inset-0 flex items-center justify-center bg-white/90">
               <span className="text-xs tracking-wide text-black/60">ESGOTADO</span>

@@ -83,7 +83,7 @@ export function useProduct(productId: number | null) {
         setLoading(true);
         setError(null);
 
-        const wcProduct = await productService.getById(productId);
+        const wcProduct = await productService.getById(productId!);
 
         if (isMounted) {
           const localProduct = mapWCProductsToLocal([wcProduct])[0];
