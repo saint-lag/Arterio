@@ -26,13 +26,14 @@ async function storeRequest<T>(endpoint: string, options: RequestInit = {}): Pro
 }
 
 export const productService = {
-  async getAll(params?: { per_page?: number; page?: number; category?: string; search?: string }): Promise<any[]> {
+  async getAll(params?: { per_page?: number; page?: number; category?: string; search?: string; featured?: boolean }): Promise<any[]> {
     const queryParams = new URLSearchParams();
     
     if (params?.per_page) queryParams.append('per_page', params.per_page.toString());
     if (params?.page) queryParams.append('page', params.page.toString());
     if (params?.category) queryParams.append('category', params.category);
     if (params?.search) queryParams.append('search', params.search);
+    if (params?.featured !== undefined) queryParams.append('featured', params.featured.toString());
     
     // Na Store API não precisamos de status=publish, ela já faz isso nativamente
     return storeRequest<any[]>(`/products?${queryParams.toString()}`);

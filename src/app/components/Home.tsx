@@ -1,13 +1,20 @@
 import { ArrowRight } from "lucide-react";
-import type { WCProduct } from "../types/woocommerce";
+import { useProducts } from "../hooks/useProducts";
+import type { Product } from "../types/woocommerce";
 
 interface HomeProps {
   onNavigate: (page: string) => void;
   onCategorySelect: (category: string) => void;
-  onProductClick?: (product: WCProduct) => void;
+  onProductClick?: (product: any) => void;
 }
 
 export function Home({ onNavigate, onCategorySelect, onProductClick }: HomeProps) {
+  // Buscar produtos em destaque da Store API
+  const { products: featuredProducts, loading: loadingFeatured } = useProducts({
+    featured: true,
+    perPage: 3,
+  });
+
   const categories = [
     { name: "Organização e Fixação", count: "120+ itens" },
     { name: "Fitas Adesivas", count: "85+ itens" },
@@ -19,89 +26,7 @@ export function Home({ onNavigate, onCategorySelect, onProductClick }: HomeProps
     { name: "Ferramentas e Set", count: "110+ itens" },
   ];
 
-
-  const featuredProducts: WCProduct[] = [
-    {
-      id: 1001,
-      name: "Gaffer Tape Tecido 48mm",
-      slug: "gaffer-tape-tecido-48mm",
-      permalink: "",
-      date_created: "",
-      type: "simple",
-      status: "publish",
-      featured: true,
-      catalog_visibility: "visible",
-      description: "Fita adesiva de tecido profissional, resistente e sem deixar resíduos. Ideal para fixação temporária em produções audiovisuais.",
-      short_description: "Fita adesiva de tecido profissional 48mm",
-      sku: "GAFFER-48MM",
-      price: "68.00",
-      regular_price: "68.00",
-      sale_price: "",
-      on_sale: false,
-      stock_status: "instock",
-      stock_quantity: 50,
-      manage_stock: true,
-      categories: [{ id: 4, name: "Fitas", slug: "fitas" }],
-      images: [],
-      attributes: [],
-      variations: [],
-      meta_data: [],
-    },
-    {
-      id: 1002,
-      name: "Abraçadeira Hellermann",
-      slug: "abracadeira-hellermann",
-      permalink: "",
-      date_created: "",
-      type: "simple",
-      status: "publish",
-      featured: true,
-      catalog_visibility: "visible",
-      description: "Abraçadeira plástica de alta qualidade marca Hellermann. Resistente e durável para organização de cabos e fixação.",
-      short_description: "Abraçadeira plástica Hellermann",
-      sku: "HELLERMANN-100",
-      price: "28.50",
-      regular_price: "28.50",
-      sale_price: "",
-      on_sale: false,
-      stock_status: "instock",
-      stock_quantity: 200,
-      manage_stock: true,
-      categories: [{ id: 3, name: "Elétrica", slug: "eletrica" }],
-      images: [],
-      attributes: [],
-      variations: [],
-      meta_data: [],
-    },
-    {
-      id: 1003,
-      name: "Filtro de Linha 6 Tomadas",
-      slug: "filtro-linha-6-tomadas",
-      permalink: "",
-      date_created: "",
-      type: "simple",
-      status: "publish",
-      featured: true,
-      catalog_visibility: "visible",
-      description: "Filtro de linha com 6 tomadas e proteção contra surtos elétricos. Essencial para proteção de equipamentos audiovisuais.",
-      short_description: "Filtro de linha 6 tomadas com proteção",
-      sku: "FILTRO-6T",
-      price: "85.00",
-      regular_price: "85.00",
-      sale_price: "",
-      on_sale: false,
-      stock_status: "instock",
-      stock_quantity: 30,
-      manage_stock: true,
-      categories: [{ id: 3, name: "Elétrica", slug: "eletrica" }],
-      images: [],
-      attributes: [],
-      variations: [],
-      meta_data: [],
-    },
-  ];
-
-  const handleProductClick = (product: WCProduct) => {
+  const handleProductClick = (product: Product) => {
     if (onProductClick) {
       onProductClick(product);
     }
@@ -174,32 +99,65 @@ export function Home({ onNavigate, onCategorySelect, onProductClick }: HomeProps
           <p className="text-2xl tracking-tight text-black">Produtos em Evidência</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-px bg-black/10 md:grid-cols-3">
-          {featuredProducts.map((product, index) => (
-            <div
-              key={index}
-              className="group bg-white p-8 cursor-pointer hover:bg-neutral-50 transition-colors"
-              onClick={() => handleProductClick(product)}
-            >
-              <div className="mb-8 aspect-square bg-neutral-100 border border-black/5 group-hover:border-black/20 transition-colors" />
-              <h4 className="mb-4 text-sm tracking-tight text-black group-hover:text-black/60 transition-colors">
-                {product.name}
-              </h4>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-black">R$ {product.price}</span>
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // Aqui você pode adicionar a lógica de adicionar ao carrinho se necessário
-                  }}
-                  className="text-xs tracking-wide text-black hover:text-black/60 transition-colors"
-                >
-                  ADICIONAR
-                </button>
+        {loadingFeatured ? (
+          <div className="grid grid-cols-1 gap-px bg-black/10 md:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white p-8">
+                <div className="mb-8 aspect-square bg-neutral-100 border border-black/5 animate-pulse" />
+                <div className="h-4 bg-neutral-100 mb-4 animate-pulse" />
+                <div className="flex items-center justify-between">
+                  <div className="h-4 w-20 bg-neutral-100 animate-pulse" />
+                  <div className="h-4 w-16 bg-neutral-100 animate-pulse" />
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : featuredProducts.length > 0 ? (
+          <div className="grid grid-cols-1 gap-px bg-black/10 md:grid-cols-3">
+            {featuredProducts.slice(0, 3).map((product) => (
+              <div
+                key={product.id}
+                className="group bg-white p-8 cursor-pointer hover:bg-neutral-50 transition-colors"
+                onClick={() => handleProductClick(product)}
+              >
+                <div className="mb-8 aspect-square bg-neutral-100 border border-black/5 group-hover:border-black/20 transition-colors overflow-hidden">
+                  {product.image ? (
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : null}
+                </div>
+                <h4 className="mb-4 text-sm tracking-tight text-black group-hover:text-black/60 transition-colors">
+                  {product.name}
+                </h4>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-black">
+                    R$ {typeof product.price === 'number' 
+                      ? product.price.toFixed(2) 
+                      : parseFloat(product.price as any).toFixed(2)}
+                  </span>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Aqui você pode adicionar a lógica de adicionar ao carrinho se necessário
+                    }}
+                    className="text-xs tracking-wide text-black hover:text-black/60 transition-colors"
+                  >
+                    ADICIONAR
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="py-16 text-center">
+            <p className="text-sm text-black/40">
+              Nenhum produto em destaque no momento
+            </p>
+          </div>
+        )}
       </section>
 
       {/* CTA Section */}

@@ -6,6 +6,7 @@ interface UseProductsOptions {
   category?: string;
   search?: string;
   perPage?: number;
+  featured?: boolean;
   enabled?: boolean; // Para controlar quando buscar
 }
 
@@ -14,7 +15,7 @@ export function useProducts(options: UseProductsOptions = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const { category, search, perPage = 100, enabled = true } = options;
+  const { category, search, perPage = 100, featured, enabled = true } = options;
 
   useEffect(() => {
     if (!enabled) {
@@ -33,6 +34,7 @@ export function useProducts(options: UseProductsOptions = {}) {
           per_page: perPage,
           category,
           search,
+          featured,
         });
 
         if (isMounted) {
@@ -56,7 +58,7 @@ export function useProducts(options: UseProductsOptions = {}) {
     return () => {
       isMounted = false;
     };
-  }, [category, search, perPage, enabled]);
+  }, [category, search, perPage, featured, enabled]);
 
   return { products, loading, error };
 }
@@ -68,7 +70,7 @@ export function useProduct(productId: number | null) {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    if (!productId || typeof productId !== 'number') {
+    if (!productId) {
       setProduct(null);
       setLoading(false);
       return;
@@ -81,7 +83,7 @@ export function useProduct(productId: number | null) {
         setLoading(true);
         setError(null);
 
-        const wcProduct = await productService.getById(productId as number);
+        const wcProduct = await productService.getById(productId);
 
         if (isMounted) {
           const localProduct = mapWCProductsToLocal([wcProduct])[0];
